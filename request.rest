@@ -1,0 +1,60 @@
+### vars
+@livehost = https://auth.knight.works/api/v1
+@port = 3131
+@localhost = http://localhost:{{port}}/api/v1
+@contentType = application/json
+
+### verify
+GET {{livehost}}/verify
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzIsImVtYWlsIjoiam9yZGFuKzE4QGtuaWdodC53b3JrcyIsInNpdGUiOiJjbG91ZC5rbmlnaHQud29ya3MiLCJpYXQiOjE1NzI3MzAxMzUsImV4cCI6MTU3MjgxNjUzNX0.2E8c1ZUwyMvFnRHljSK4EZO0rVVuRaAlbE0-lF_Yv_w
+
+
+###
+
+###
+//POST {{livehost}}/register
+POST {{localhost}}/register
+content-type: {{contentType}}
+
+{
+    "email": "jordan+18@knight.works",
+    "password": "test",
+    "site": "cloud.knight.works"
+}
+####
+POST {{localhost}}/login
+content-type: {{contentType}}
+
+{
+    "email": "jordan+14@knight.works",
+    "password": "test"
+}
+
+###
+POST {{localhost}}/login
+content-type: application/json
+
+{
+    "email": "jordan+18@knight.works",
+    "password": "test"
+}
+
+###
+### Refresh
+POST {{localhost}}/refresh
+content-type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDEwJEJJQVVLRmJCakk2dGxHQVFxVTNHNnViQUNLS2tTZWkyUGNxRlZESE1acmU2VEJtekUwOGpTIiwiaWF0IjoxNTcyNzIzMzM2fQ.H94OYXkcQKEsaYP4m549g47ch5VfJA_1v2RtU-_JsMs"
+}
+
+### Refresh
+POST {{localhost}}/logout
+content-type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDEwJEJJQVVLRmJCakk2dGxHQVFxVTNHNnViQUNLS2tTZWkyUGNxRlZESE1acmU2VEJtekUwOGpTIiwiaWF0IjoxNTcyNzIzMzM2fQ.H94OYXkcQKEsaYP4m549g47ch5VfJA_1v2RtU-_JsMs"
+}
+
+
+###
