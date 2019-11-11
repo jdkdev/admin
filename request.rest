@@ -1,6 +1,6 @@
 ### vars
 @livehost = https://auth.knight.works/api/v1
-@port = 3131
+@port = 3132
 @localhost = http://localhost:{{port}}/api/v1
 @contentType = application/json
 
@@ -17,7 +17,7 @@ POST {{localhost}}/register
 content-type: {{contentType}}
 
 {
-    "email": "jordan+18@knight.works",
+    "email": "jordan+20@knight.works",
     "password": "test",
     "site": "cloud.knight.works"
 }

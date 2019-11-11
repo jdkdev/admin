@@ -1,6 +1,7 @@
 //register, login, logout, refreshtokens, verify
 let express = require('express')
 let router = express.Router()
+let User = require('./User')
 
 const bodyParser = require('body-parser')
 router.use(bodyParser.urlencoded({ extended: false }))
@@ -13,6 +14,12 @@ router.use('/', (req, res, next) => {
 
 let AuthController = require('./AuthController')
 
+// router.get('/users', UserController.index)
+router.get('/users', (req, res) => {
+    console.log('user', User.all())
+    let users = User.all()
+    return res.json(users)
+})
 router.post('/register', AuthController.register)
 router.post('/login', AuthController.login)
 router.post('/refresh', AuthController.refresh)
