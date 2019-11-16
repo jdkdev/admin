@@ -3,7 +3,7 @@ const helmet = require('helmet')
 const cors = require('cors')
 
 let server = require('express')()
-let port = env.get('PORT') || 3131;
+let port = env.get('PORT') || 3000;
 let router = require('./router')
 
 server.use(helmet())

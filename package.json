@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/server.js",
+    "dev": "nodemon src/server.js",
     "test": "node ace test",
+    "db": "sqlite3 ~/code/Z/DB/auth/db.sqlite",
     "site:new": "node ./.front/forgery.js",
     "site:build": "cp app/pages/index.html dist/",
     "site:deploy": "node ./.front/deploy.js",

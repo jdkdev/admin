@@ -20,27 +20,33 @@ class User extends Model {
             return this
         })()
     }
-    static async create({email, password, site, date_added = new Date()}) {
+    static async store({email, password, site, date_added = new Date().toString()}) {
         //validate data
         //make sure doesn't exist in system
         try {
             let usere = await User.findByEmail(email)
-            console.log({usere})
+            // console.log({usere})
             if (usere) {
                 //TODO: how do I make this error out
-                return {'message' : 'Email taken'}
             }
         } catch (e) {
-            return new Error(e)
+            return console.log({e})
         }
+
         try {
             let hashedPassword = await bcrypt.hash(password, 10)
-            var sql = 'INSERT INTO users(email, password, site, date_added) VALUES (?, ?, ?, ?)'
-            // let id = await User._run(sql, [email, hashedPassword, site, date_added])
-            let id = this.run(sql, [email, hashedPassword, site, date_added])
-            return User.find(id)
+
+            let newUser = await new User({email, password: hashedPassword, site, date_added})
+            let result = await newUser.save()
+            return newUser
+            // let me = await User.findByID(22)
+            // console.log(me)
+            // me.email = 'j@j.com'
+            // await me.save()
+            let user = User.create({email, password: hashedPassword, site, date_added})
+            return user
         } catch (e) {
-            return new Error(e)
+            return console.log({e})
         }
     }
     static async update({id, email, site, date_added}) {
@@ -50,7 +56,7 @@ class User extends Model {
             return {message: 'Email taken'}
         }
         var sql = 'UPDATE users SET email=?, site=?, date_added=?) WHERE id = ?'
-        let result = await db.run(sql, [email, site, date_added, id])
+        let result = await this.run(sql, [email, site, date_added, id])
         let user = await User.findByID(result.lastInsertRowid)
         return user
     }
@@ -61,16 +67,8 @@ class User extends Model {
     }
     static async findByEmail(email) {
         let response = this.where('email', [email]);
-        console.log({response})
+        // console.log({response})
         return response !== null ? await new User(response) : response
-    }
-    async save() {
-        if (this.id) {
-            //update
-            User.update(this)
-        } else {
-            return await User.create(this)
-        }
     }
     async login() {
         let accessToken = this.generateAccessToken(ACCESS_TOKEN_SECRET)
@@ -113,7 +111,9 @@ User.fields = [
         type: 'timestamp'
     }
 ]
-User.fillable = ['id', 'email', 'site', 'date_added']
-User.guarded = ['password']
+User.fillable = []
+// User.guarded = []
+User.visible = []
+User.hidden = ['password']
 
 module.exports = User

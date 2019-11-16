@@ -19,9 +19,13 @@ content-type: {{contentType}}
 {
     "email": "jordan+20@knight.works",
     "password": "test",
-    "site": "cloud.knight.works"
+    "site": "admin.knight.works"
 }
+###
+//GET /users
+GET {{localhost}}/users
 ####
+
 POST {{localhost}}/login
 content-type: {{contentType}}
 

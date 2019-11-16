@@ -11,6 +11,7 @@ let refreshTokens = [
 ]
 const AuthController = {
     async register(req, res) {
+        // console.log({req})
         //validate request
         try {
             let user = {
@@ -18,7 +19,7 @@ const AuthController = {
                 password: req.body.password,
                 site: req.body.site
             }
-            res.status(201).send(await User.create(user))
+            res.status(201).send(await User.store(user))
             // let newUser = await new User(user)
             // let result = await newUser.save()
             // let me = await User.findByID(22)

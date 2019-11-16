@@ -20,6 +20,11 @@ router.get('/users', (req, res) => {
     let users = User.all()
     return res.json(users)
 })
+router.post('/users', (req, res) => {
+
+    let users = User.all()
+    return res.json(users)
+})
 router.post('/register', AuthController.register)
 router.post('/login', AuthController.login)
 router.post('/refresh', AuthController.refresh)
