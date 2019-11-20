@@ -1,107 +1,131 @@
-// const { env } = require('frontier')
 const DB = require('./Database')
 
 class Model {
-    /**
-     * Use defined visible and hidden fields on Model to create field list
-     */
-    static _getVisibleFields() {
-        let fields = (this.visible || []).length  > 0 ? this.visible : this.fields.map(field => field.name)
-        let sqlString = fields.filter(field => ! (this.hidden || []).includes(field))
-        // console.log({sqlString})
-        return sqlString
+    static get table() {
+        return this.name.toLowerCase() + 's'
     }
-    static _getFillableFields(fields) {
-        if (fields) {
-            fields = Object.keys(fields)
-        } else {
-            fields = (this.fillable || []).length  > 0 ? this.fillable : this.fields.map(field => field.name)
-        }
+    get table() { // if needed in instance
+        return this.constructor.table
+    }
+    static get fields() {
+        return []
+    }
+    static get visible() {
+        return []
+    }
+    static get hidden() {
+        return []
+    }
+    static get fillable() {
+        return []
+    }
+    static get guarded() {
+        return ['id']
+    }
+    _getVisibleFields() {
+        let {fields, visible, hidden} = this.constructor
 
-        let sqlString = fields.filter(field => ! (this.guarded || Model.guarded).includes(field))
-        console.log({sqlString})
-        return sqlString
+        visible = visible.length ? visible : fields.map(field => field.name)
+        let fieldsArray = visible.filter(field => ! hidden.includes(field))
+        return fieldsArray
     }
-    static _getParameterizedFields(fields) {
-        fields = this._getFillableFields(fields)
-        console.log({fields})
-        let parameterized = fields.map(field => '$' + field)
+    _getFillableFields() {
+        let {fillable, fields, guarded} = this.constructor
+        fillable = fillable.length ? fillable : fields.map(field => field.name)
+        let fieldsArray = fillable.filter(field => !guarded.includes(field))
+        return fieldsArray
+    }
+    _getFillableParams() {
+        let fillable = this._getFillableFields()
+        let params = {}
+        Object.keys(this).forEach(field => {
+            if (fillable.includes(field)) params[field] = this[field]
+        })
+        return params
+    }
+    _getParameterizedFields() {
+        let fillable = this._getFillableFields()
+        // console.log({fields})
+        let parameterized = fillable.map(field => '$' + field)
         // console.log({parameterized})
         return parameterized
     }
 
-    static _getFillableInsertQuery(params) {
-        let sql = '(' + this._getFillableFields(params)
-        sql += ') VALUES ('
-        sql += this._getParameterizedFields(params)
-        sql += ' )'
+    _getFillableInsertQuery() {
+        let sql = '(' + this._getFillableFields() + ')' +
+        ' VALUES (' + this._getParameterizedFields() + ' )'
         return sql
     }
-    static _getFillableUpdateQuery(fields) {
-        fields = this._getFillableFields(fields)
-        let sqlString = fields.map(field => {
-            let newField = field + ' = $' + field + ' '
-            return newField
-        })
+    _getFillableUpdateQuery() {
+        fillable = this._getFillableFields()
+        let sqlString = fillable.map(field => field + ' = $' + field + ' ')
         return sqlString
     }
 
-    static _qSelect() {
+    _qSelect() {
         let sqlSelect = 'SELECT ' + this._getVisibleFields()
         // console.log(sqlSelect)
         return sqlSelect
     }
-    static _qInsert() {
+    _qInsert() {
         let sqlInsert = 'INSERT INTO ' + this.table
         return sqlInsert
     }
-    static _qUpdate() {
+    _qUpdate() {
         let sqlUpdate = 'UPDATE ' + this.table + ' SET '
-        // let sql = 'UPDATE ' + this.table + 'SET ('
         return sqlUpdate
     }
 
-    static _query() {
+    _query() {
         let sqlPartial = this._qSelect() +  ' FROM ' + this.table 
         return sqlPartial
     }
 
     static all() {
+        return (new this).all(...arguments)
+    }
+    all() {
         var sql = this._query()
         return DB.all(sql)
     }
 
-
-    static where(field, params) {
+    static where() {
+        return (new this).where(...arguments)
+    }
+    where(field, params) {
+        // console.log({field})
         var sql = this._query() + ' WHERE ' + field + ' = ?' 
         return DB.get(sql, params)
     }
 
-    static get(field, param) {
+    get(field, param) {
         return this.where(field, param)
     }
 
-    static find(id) {
+    static find() {
+        return (new this).find(...arguments)
+    }
+    find(id) {
         return this.get('id', id)
     }
 
-
     static create(data) {
-        return this.id ? this._update(data) : this._insert(data)
+        let instance = new this(data)
+        return instance.save()
     }
+
     save() {
-        return this.id ? Model._update(this) : Model._insert(this)
+        return this.id ? this._update() : this._insert()
     }
 
-    static _insert(params) {
-        let sql = Model._qInsert() + Model._getFillableInsertQuery(params)
-        console.log({sql})
+    _insert() {
+        let params = this._getFillableParams()
+        let sql = this._qInsert() + this._getFillableInsertQuery()
         let {changes, lastInsertRowid} = DB.run(sql, params)
-        // return returnId ? lastInsertRowid : this.find(lastInsertRowid)
-        return Model.find(lastInsertRowid)
+        return this.find(lastInsertRowid)
     }
 
-    static _update(params) {
+    _update(params) {
         let sql = this._qUpdate() + this._getFillableUpdateQuery(params)
         sql += ' WHERE id = $id'
         params['id'] = this.id
@@ -110,11 +134,5 @@ class Model {
         return this.find(lastInsertRowid)
     }
 }
-// Model.table = ''
-// Model.fields = []
-// Model.fillable = []
-Model.guarded = ['id']
-// Model.visible = []
- // Model.hidden = ['password']
 
 module.exports = Model

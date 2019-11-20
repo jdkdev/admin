@@ -22,6 +22,15 @@ content-type: {{contentType}}
     "site": "admin.knight.works"
 }
 ###
+POST {{localhost}}/users
+content-type: {{contentType}}
+
+{
+    "email": "jordan+20@knight.works",
+    "password": "test",
+    "site": "admin.knight.works"
+}
+###
 //GET /users
 GET {{localhost}}/users
 ####
@@ -59,6 +68,4 @@ content-type: application/json
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDEwJEJJQVVLRmJCakk2dGxHQVFxVTNHNnViQUNLS2tTZWkyUGNxRlZESE1acmU2VEJtekUwOGpTIiwiaWF0IjoxNTcyNzIzMzM2fQ.H94OYXkcQKEsaYP4m549g47ch5VfJA_1v2RtU-_JsMs"
 }
-
-
 ###

@@ -14,18 +14,8 @@ const AuthController = {
         // console.log({req})
         //validate request
         try {
-            let user = {
-                email: req.body.email,
-                password: req.body.password,
-                site: req.body.site
-            }
-            res.status(201).send(await User.store(user))
-            // let newUser = await new User(user)
-            // let result = await newUser.save()
-            // let me = await User.findByID(22)
-            // console.log(me)
-            // me.email = 'j@j.com'
-            // await me.save()
+            let user = { email, password, site } = req.body
+            res.status(201).send(await User.validateThenStore(user))
         } catch (e) {
             console.log('error', e)
             res.status(500).send()
@@ -36,7 +26,7 @@ const AuthController = {
         let password = req.body.password;
         let user
         try {
-            user = await User.findByEmail(email)
+            user = User.findByEmail(email)
         } catch (e) {
             console.log({e})
             res.status(500).send()
@@ -63,8 +53,8 @@ const AuthController = {
 
         jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, userData) => {
             if (err) return res.sendStatus(403)
-            let user = await User.findByID(userData.id)
-            const {accessToken} = await user.login()
+            let user = User.find(userData.id)
+            let {accessToken} = await user.login()
             res.json({accessToken})
         })
     },
