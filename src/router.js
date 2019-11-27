@@ -13,10 +13,11 @@ router.use('/', (req, res, next) => {
 
 
 let UserController = require('./UserController')
-router.get('/users', UserController.index)
+let AuthController = require('./AuthController')
+
+router.get('/users', AuthController.authenticateTokenMiddleware, UserController.index)
 router.post('/users', UserController.store)
 
-let AuthController = require('./AuthController')
 router.post('/register', AuthController.register)
 router.post('/login', AuthController.login)
 router.post('/refresh', AuthController.refresh)
