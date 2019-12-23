@@ -16,7 +16,10 @@ let UserController = require('./UserController')
 let AuthController = require('./AuthController')
 
 router.get('/users', AuthController.authenticateTokenMiddleware, UserController.index)
+router.get('/users/all', AuthController.authenticateTokenMiddleware, UserController.all)
 router.post('/users', UserController.store)
+router.delete('/users/:id', UserController.destroy)
+router.put('/users/:id/restore', UserController.restore)
 
 router.post('/register', AuthController.register)
 router.post('/login', AuthController.login)

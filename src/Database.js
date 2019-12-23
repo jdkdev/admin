@@ -19,7 +19,7 @@ class Database {
         this.db = connection
     }
     ex(cmd, sql, params = []) {
-        // console.log({sql, params})
+        console.log({sql, params})
         let stmt = this.db.prepare(sql)
         let result = stmt[cmd](params)
         return result

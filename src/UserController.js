@@ -14,8 +14,23 @@ const UserController = {
         let users = User.all()
         return res.json(users)
     },
+    all(req, res) {
+        let users = User.all('withDeleted')
+        return res.json(users)
+    },
+    destroy(req, res) {
+        User.delete(parseInt(req.params.id))
+
+        return res.json({ok: true})
+    },
+    restore(req, res) {
+        let user = User.restore(parseInt(req.params.id))
+        console.log({user})
+        res.json(user)
+    },
     async store(req, res) {
         let user = { email, password, site } = req.body
+        console.log({user})
         res.status(201).send(await User.validateThenStore(user))
     },
 

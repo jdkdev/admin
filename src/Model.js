@@ -57,7 +57,7 @@ class Model {
         return sql
     }
     _getFillableUpdateQuery() {
-        fillable = this._getFillableFields()
+        let fillable = this._getFillableFields()
         let sqlString = fillable.map(field => field + ' = $' + field + ' ')
         return sqlString
     }
@@ -77,24 +77,31 @@ class Model {
     }
 
     _query() {
-        let sqlPartial = this._qSelect() +  ' FROM ' + this.table 
+        let sqlPartial = this._qSelect() +  ' FROM ' + this.table + ' WHERE 1=1 '
         return sqlPartial
     }
 
     static all() {
         return (new this).all(...arguments)
     }
-    all() {
-        var sql = this._query()
+    all(withDeleted = false) {
+        console.log({withDeleted})
+        let sql = this._query() 
+        sql += (! withDeleted) ? ' AND is_deleted IS NULL' : ''
         return DB.all(sql)
     }
+
 
     static where() {
         return (new this).where(...arguments)
     }
     where(field, params) {
         // console.log({field})
-        var sql = this._query() + ' WHERE ' + field + ' = ?' 
+        var sql = this._query() + ' AND ' + field + ' = ?' 
+        return DB.get(sql, params)
+    }
+
+    raw(sql, params) {
         return DB.get(sql, params)
     }
 
@@ -129,9 +136,31 @@ class Model {
         let sql = this._qUpdate() + this._getFillableUpdateQuery(params)
         sql += ' WHERE id = $id'
         params['id'] = this.id
+        return this.find(this.id)
+    }
+    static delete(id) {
+        let instance = new this(this.find(id))
+        return instance.delete(...arguments)
+    }
+    delete() {
+        let sql = this._qUpdate() + ' is_deleted = $is_deleted '
+        sql += ' WHERE id = $id'
+        let params = {id: this.id, is_deleted: Date().toString()}
         let {changes, lastInsertRowid} = DB.run(sql, params)
         // return returnId ? lastInsertRowid : this.find(lastInsertRowid)
-        return this.find(lastInsertRowid)
+        return this.find(this.id)
+    }
+    static restore(id) {
+        let instance = new this(this.find(id))
+        console.log({instance})
+        return instance.restore(...arguments)
+    }
+    restore() {
+        let sql = this._qUpdate() + ' is_deleted = $is_deleted '
+        sql += ' WHERE id = $id'
+        let params = {id: this.id, is_deleted: null}
+        DB.run(sql, params)
+        return this.find(this.id)
     }
 }
 

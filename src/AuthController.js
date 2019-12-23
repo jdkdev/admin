@@ -27,6 +27,7 @@ const AuthController = {
         let user
         try {
             user = User.findByEmail(email)
+            console.log(user)
         } catch (e) {
             console.log({e})
             res.status(500).send()
@@ -36,7 +37,7 @@ const AuthController = {
             if (await user.auth(password)) {
                 let {accessToken, refreshToken} = await user.login()
                 refreshTokens.push(refreshToken)
-                res.json({ accessToken: accessToken, refreshToken: refreshToken })
+                res.json({ accessToken: accessToken, refreshToken: refreshToken, user })
             } else {
                 return res.json({message: 'Not allowed'})
             }

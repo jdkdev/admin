@@ -21,6 +21,9 @@ class User extends Model {
     static get hidden() {
         return ['password']
     }
+    static get guarded() {
+        return ['is_deleted', 'date_added']
+    }
     static get fields() {
         return [
             {
@@ -42,16 +45,26 @@ class User extends Model {
             {
                 name: 'date_added',
                 type: 'timestamp'
+            },
+            {
+                name: 'is_deleted',
+                type: 'timestamp'
             }
         ]
     }
-    static async validateThenStore({email, password, site, date_added = new Date().toString()}) {
+    static findByEmail(email) {
+        let instance = this.where('email', email)
+        console.log({instance})
+        return new this(instance)
+    }
+    static async validateThenStore({email, password, site}) {
         //Need to validate data
         try {
-            if (this.emailTaken(email)) return 'Email Taken'
+            if (this.emailTaken(email)) return {error: 'Email Taken'}
 
             let hashedPassword = await bcrypt.hash(password, 10)
-            let result = this.create({email, password: hashedPassword, site, date_added})
+            let result = this.create({email, password: hashedPassword, site})
+            console.log(result)
             return result
         } catch (e) {
             return console.log({e})
@@ -59,6 +72,24 @@ class User extends Model {
     }
     static emailTaken(email) {
         if (this.where('email', email)) return true
+    }
+
+    async auth(pw) {
+        let sql = 'SELECT password FROM users where id = $id'
+        let {password} = this.raw(sql, {id: this.id})
+        console.log({password})
+        if (await bcrypt.compare(pw, password)) return 'success'
+        else return null
+    }
+    login() {
+        let accessToken = this.generateAccessToken(ACCESS_TOKEN_SECRET)
+        let refreshToken = this.generateAccessToken(REFRESH_TOKEN_SECRET)
+
+        refreshTokens.push(refreshToken)
+        return {accessToken, refreshToken}
+    }
+    generateAccessToken(token, expiration='24h') {
+        return jwt.sign({id: this.id, email: this.email, site: this.site}, token, { expiresIn: expiration })
     }
 }
 
