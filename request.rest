@@ -12,8 +12,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzIsImVtYWlsI
 ###
 
 ###
-//POST {{livehost}}/register
-POST {{localhost}}/register
+POST {{livehost}}/register
+# POST {{localhost}}/register
 content-type: {{contentType}}
 
 {
@@ -44,11 +44,11 @@ content-type: {{contentType}}
 }
 
 ###
-POST {{localhost}}/login
+POST {{livehost}}/login
 content-type: application/json
 
 {
-    "email": "jordan+18@knight.works",
+    "email": "jordan+10@knight.works",
     "password": "test"
 }
 

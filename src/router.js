@@ -19,7 +19,7 @@ router.get('/users', AuthController.authenticateTokenMiddleware, UserController.
 router.get('/users/all', AuthController.authenticateTokenMiddleware, UserController.all)
 router.post('/users', UserController.store)
 router.delete('/users/:id', UserController.destroy)
-router.put('/users/:id/restore', UserController.restore)
+router.patch('/users/:id/restore', UserController.restore)
 
 router.post('/register', AuthController.register)
 router.post('/login', AuthController.login)
