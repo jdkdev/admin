@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 
 let ACCESS_TOKEN_SECRET= env.get('ACCESS_TOKEN_SECRET')
 let REFRESH_TOKEN_SECRET = env.get('REFRESH_TOKEN_SECRET')
-let User = require('./User')
+let User = require('$m/User')
 
 //fix
 let refreshTokens = [
@@ -11,11 +11,11 @@ let refreshTokens = [
 ]
 const UserController = {
     index(req, res) {
-        let users = User.all()
+        let users = User._getAll()
         return res.json(users)
     },
     all(req, res) {
-        let users = User.all('withDeleted')
+        let users = User.getAll({withDeleted: true})[0]._._getAll({withDeleted: true})
         return res.json(users)
     },
     destroy(req, res) {
@@ -23,8 +23,8 @@ const UserController = {
 
         return res.json({ok: true})
     },
-    restore(req, res) {
-        let user = User.restore(parseInt(req.params.id))
+    restore({params: {id}}, res) {
+        let user = User.restore(parseInt(id))
         console.log({user})
         res.json(user)
     },

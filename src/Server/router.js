@@ -12,8 +12,8 @@ router.use('/', (req, res, next) => {
 })
 
 
-let UserController = require('./UserController')
-let AuthController = require('./AuthController')
+let UserController = require('$c/UserController')
+let AuthController = require('$c/AuthController')
 
 router.get('/users', AuthController.authenticateTokenMiddleware, UserController.index)
 router.get('/users/all', AuthController.authenticateTokenMiddleware, UserController.all)

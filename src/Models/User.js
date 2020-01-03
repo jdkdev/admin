@@ -2,21 +2,24 @@ const { env } = require('frontier')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 // const db = require('./connection')
-const Model = require('./Model')
+const Model = require('frontier-backend/Model')
 
 let refreshTokens = []
 let REFRESH_TOKEN_SECRET = env.get('REFRESH_TOKEN_SECRET')
 let ACCESS_TOKEN_SECRET= env.get('ACCESS_TOKEN_SECRET')
 
 class User extends Model {
-    constructor({id = null, email = '', password = '', date_added = new Date(), site = ''} = {}) {
+    constructor({id = null, email = '', password = '', date_added = new Date().toJSON(), site = ''} = {}) {
         super()
-            this.id = id
-            this.email = email
-            this.password = password
-            this.date_added = date_added
-            this.site = site
-            return this
+        this.id = id
+        this.email = email
+        this.password = password
+        this.date_added = date_added
+        this.site = site
+        return this
+    }
+    static get useSoftDeletes() {
+        return true
     }
     static get hidden() {
         return ['password']
@@ -26,34 +29,16 @@ class User extends Model {
     }
     static get fields() {
         return [
-            {
-                name: 'id',
-                type: 'integer',
-            },
-            {
-                name: 'email',
-                type: 'string'
-            },
-            {
-                name: 'password',
-                type: 'string'
-            },
-            {
-                name: 'site',
-                type: 'string'
-            },
-            {
-                name: 'date_added',
-                type: 'timestamp'
-            },
-            {
-                name: 'is_deleted',
-                type: 'timestamp'
-            }
+            { name: 'id', type: 'integer', },
+            { name: 'email', type: 'string' },
+            { name: 'password', type: 'string' },
+            { name: 'site', type: 'string' },
+            { name: 'date_added', type: 'timestamp' },
+            { name: 'is_deleted', type: 'timestamp' }
         ]
     }
     static findByEmail(email) {
-        let instance = this.where('email', email)
+        let instance = this.getWhere('email', email)
         console.log({instance})
         return new this(instance)
     }
@@ -71,7 +56,7 @@ class User extends Model {
         }
     }
     static emailTaken(email) {
-        if (this.where('email', email)) return true
+        if (this.getWhere('email', email)) return true
     }
 
     async auth(pw) {

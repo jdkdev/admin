@@ -11,4 +11,4 @@ server.use(helmet())
 server.use(helmet.hidePoweredBy({ setTo: 'PHP 3.3.0' }))
 
 server.use('/api/v1', router)
-server.listen(port, () => console.log(`Admin Server listening on port ${port}!`))
+module.exports = server

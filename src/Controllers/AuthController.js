@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 
 let ACCESS_TOKEN_SECRET= env.get('ACCESS_TOKEN_SECRET')
 let REFRESH_TOKEN_SECRET = env.get('REFRESH_TOKEN_SECRET')
-let User = require('./User')
+let User = require('$m/User')
 
 //fix
 let refreshTokens = [
