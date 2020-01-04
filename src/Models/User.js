@@ -39,30 +39,27 @@ class User extends Model {
     }
     static findByEmail(email) {
         let instance = this.getWhere('email', email)
-        console.log({instance})
         return new this(instance)
     }
     static async validateThenStore({email, password, site}) {
         //Need to validate data
         try {
-            if (this.emailTaken(email)) return {error: 'Email Taken'}
+            if (this.emailTaken(email)) return {error: 'Email Taken 1'}
 
             let hashedPassword = await bcrypt.hash(password, 10)
             let result = this.create({email, password: hashedPassword, site})
-            console.log(result)
             return result
         } catch (e) {
             return console.log({e})
         }
     }
     static emailTaken(email) {
-        if (this.getWhere('email', email)) return true
+        return this._getWhere('email', email)
     }
 
     async auth(pw) {
         let sql = 'SELECT password FROM users where id = $id'
         let {password} = this.raw(sql, {id: this.id})
-        console.log({password})
         if (await bcrypt.compare(pw, password)) return 'success'
         else return null
     }

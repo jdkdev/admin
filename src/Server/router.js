@@ -11,7 +11,6 @@ router.use('/', (req, res, next) => {
     next()
 })
 
-
 let UserController = require('$c/UserController')
 let AuthController = require('$c/AuthController')
 

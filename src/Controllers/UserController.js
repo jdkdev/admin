@@ -18,6 +18,10 @@ const UserController = {
         let users = User.getAll({withDeleted: true})[0]._._getAll({withDeleted: true})
         return res.json(users)
     },
+    async store(req, res) {
+        let user = { email, password, site } = req.body
+        res.status(201).send(await User.validateThenStore(user))
+    },
     destroy(req, res) {
         User.delete(parseInt(req.params.id))
 
@@ -28,12 +32,6 @@ const UserController = {
         console.log({user})
         res.json(user)
     },
-    async store(req, res) {
-        let user = { email, password, site } = req.body
-        console.log({user})
-        res.status(201).send(await User.validateThenStore(user))
-    },
-
     logout(req, res) {
         //reqork this into DB
         refreshTokens = refreshTokens.filter(token => token !== req.body.token)
