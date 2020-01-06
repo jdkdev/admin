@@ -21,17 +21,9 @@ const AuthController = {
             res.status(500).send()
         }
     },
-    async login(req, res) {
-        let email = req.body.email;
-        let password = req.body.password;
-        let user
-        try {
-            user = User.findByEmail(email)
-            console.log(user)
-        } catch (e) {
-            console.log({e})
-            res.status(500).send()
-        }
+    async login({body : {email, password}}, res) {
+        let user = User.findByEmail(email)
+        if (!user) return res.sendStatus(401)
 
         try {
             if (await user.auth(password)) {
@@ -39,11 +31,11 @@ const AuthController = {
                 refreshTokens.push(refreshToken)
                 res.json({ accessToken: accessToken, refreshToken: refreshToken, user })
             } else {
-                return res.json({message: 'Not allowed'})
+                return res.sendStatus(401)
             }
         } catch (e) {
             console.log(e)
-            return res.json({message: 'You are not registered!'})
+            return res.status(401).json({message: 'You are not registered!'})
         }
     },
 

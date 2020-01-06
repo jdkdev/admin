@@ -38,8 +38,9 @@ class User extends Model {
         ]
     }
     static findByEmail(email) {
-        let instance = this.getWhere('email', email)
-        return new this(instance)
+        let data = this._getWhere('email', email)
+        return data ? new this(data) : null
+
     }
     static async validateThenStore({email, password, site}) {
         //Need to validate data
@@ -59,7 +60,7 @@ class User extends Model {
 
     async auth(pw) {
         let sql = 'SELECT password FROM users where id = $id'
-        let {password} = this.raw(sql, {id: this.id})
+        let { password } = (this.raw(sql, {id: this.id}) || {})
         if (await bcrypt.compare(pw, password)) return 'success'
         else return null
     }
